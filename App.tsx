@@ -1,4 +1,10 @@
-import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 // components
 import { Button } from "./shared/Button/Button";
@@ -7,6 +13,20 @@ import { Button } from "./shared/Button/Button";
 import { Colors, Fonts, Gaps } from "./shared/tokens";
 
 export default function App() {
+  const animatedValue = new Animated.Value(-100);
+  const textOpacity = animatedValue.interpolate({
+    inputRange: [-100, 0],
+    outputRange: [0, 1],
+  });
+
+  const onEnter = () => {
+    Animated.timing(animatedValue, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -14,9 +34,18 @@ export default function App() {
         style={styles.background}
         resizeMode="contain"
       >
-        <Text style={styles.mainTitle}>
-          Одно из самых вкусных кофе в городе!
-        </Text>
+        <Animated.View
+          style={{
+            ...styles.mainTitleView,
+            transform: [{ translateY: animatedValue }],
+            opacity: textOpacity,
+          }}
+          onLayout={onEnter}
+        >
+          <Text style={styles.mainTitle}>
+            Одно из самых вкусных кофе в городе!
+          </Text>
+        </Animated.View>
       </ImageBackground>
       <View style={styles.bottomView}>
         <Text style={styles.smallText}>
@@ -47,6 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: 64,
     paddingHorizontal: 30,
   },
+  mainTitleView: {},
   mainTitle: {
     color: "#fff",
     fontSize: Fonts.f34,
